@@ -5,6 +5,7 @@ var express = require('express'),
     session = require('express-session'),
     MongoStore = require('connect-mongo')(session),
     compression = require('compression'),
+    favicon = require('serve-favicon'),
     mongoose = require('mongoose'),
     passport = require('passport'),
     nconf = require('nconf'),
@@ -33,40 +34,23 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(methodOverride());
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(session({
     secret: nconf.get('session:secret'),
     name: 'session',
     store: new MongoStore({mongooseConnection: mongoose.connection}),
     proxy: true,
-    resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    resave: false
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/api/', require('./app/routes/api'));
-
-app.use(function(req, res, next){
-    var host = req.headers.host,
-        domain = host.split(':')[0],
-        port = host.split(':')[1],
-        subDomain = domain.substring(0, domain.lastIndexOf('.alete.xyz'));
-
-    res.locals.host = host;
-    res.locals.port = port;
-    res.locals.domain = domain;
-    res.locals.subDomain = subDomain;
-    res.locals.user = req.user;
-    res.locals.layout = {
-        currentPage: req.path
-    };
-    next();
-});
-
 require('./app/config/passport.js')(app, passport);
-
-app.use('/', require('./app/routes/auth'));
-app.use('/', require('./app/routes/web'));
+app.use('/', require('./app/routes/auth')); // This handles passport's routes
+app.use('/', require('./app/routes/setupLocals')); // This sets subDomain and anything else we need in res.locals
+app.use('/', require('./app/routes/www')); // Main site's pages eg. alete.xyz
+app.use('/', require('./app/routes/userBlog')); // Blog pages eg. xo.alete.xyz
 
 // Handle 404
 app.use(function(req, res) {

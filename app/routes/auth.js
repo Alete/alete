@@ -4,11 +4,6 @@ var express  = require('express'),
 module.exports = (function() {
     var app = express.Router();
 
-    app.use(function(req, res, next){
-        res.locals.user = req.user;
-        next();
-    });
-
     app.get('/signin', function(req, res){
         res.render('signin');
     });
@@ -18,13 +13,13 @@ module.exports = (function() {
     });
 
     app.post('/signin', passport.authenticate('local-signin', {
-        successRedirect : '/admin', // redirect to the secure profile section
+        successRedirect : '/', // redirect to the secure profile section
         failureRedirect : '/signin', // redirect back to the signup page if there is an error
         failureFlash : false // allow flash messages
     }));
 
     app.post('/signup', passport.authenticate('local-signup', {
-        successRedirect : '/admin',
+        successRedirect : '/',
         failureRedirect : '/signup',
          failureFlash : false // allow flash messages
     }));
