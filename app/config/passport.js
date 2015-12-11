@@ -36,14 +36,24 @@ exports = module.exports = function(app, passport) {
     },
     function(req, username, password, done) {
         process.nextTick(function() {
-            User.findOne({username: username}, function(err, user) {
+            User.findOne({
+                $or: [
+                    {
+                        username: username
+                    },
+                    {
+                        url: req.body.url
+                    }
+                ]
+            }, function(err, user) {
                 if (err) { return done(err); }
                 if (user) {
-                    return done(null, false, { message: 'That username is already taken.' });
+                    return done(null, false, { message: 'That username or url is already taken.' });
                 } else {
                     user = new User({
                         username: username,
-                        password: password
+                        password: password,
+                        url: req.body.url
                     });
                     user.save(function(err, user) {
                         if (err) { throw err; }
