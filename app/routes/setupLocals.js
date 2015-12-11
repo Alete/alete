@@ -5,7 +5,7 @@ module.exports = (function() {
     var app = express.Router();
 
     app.use(function(req, res, next){
-        var host = req.headers.host,
+        var host = req.headers.host.replace(/^www\./,''),
             domain = host.split(':')[0],
             port = host.split(':')[1],
             subDomain = domain.substring(0, domain.lastIndexOf('.alete.xyz'));
