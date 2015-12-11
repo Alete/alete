@@ -47,8 +47,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 require('./app/config/passport.js')(app, passport);
-app.use('/', require('./app/routes/auth')); // This handles passport's routes
 app.use('/', require('./app/routes/setupLocals')); // This sets subDomain and anything else we need in res.locals
+app.use('/', require('./app/routes/auth')); // This handles passport's routes
 app.use('/', require('./app/routes/www')); // Main site's pages eg. alete.xyz
 app.use('/', require('./app/routes/userBlog')); // Blog pages eg. xo.alete.xyz
 
