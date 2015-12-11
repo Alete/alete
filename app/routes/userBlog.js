@@ -8,7 +8,7 @@ module.exports = (function() {
             if(res.locals.userBlog){
                 res.send('blog exists');
             } else {
-                res.send('blog doesn\'t exist');
+                res.render('noBlog');
             }
         } else {
             next();
