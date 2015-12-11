@@ -12,10 +12,7 @@
     "url": "git+https://github.com/Alete/alete.git"
   },
   "keywords": [
-    "nginx",
-    "panel",
-    "controlpanel",
-    "cpanel"
+    "blog"
   ],
   "author": "Alete",
   "license": "MIT",
