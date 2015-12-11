@@ -5,10 +5,7 @@ var mongoose = require('mongoose'),
 var userSchema = new mongoose.Schema({
     username: String,
     password: String,
-    name: {
-        first: String,
-        last: String
-    },
+    url: String,
     isAdmin: {
         type: Boolean,
         default: false
