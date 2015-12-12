@@ -4,53 +4,37 @@ var express  = require('express'),
 module.exports = (function() {
     var app = express.Router();
 
-    app.get('/signin', function(req, res, next){
-        if(!res.locals.subDomain){
-            res.render('signin');
-        } else {
-            next();
-        }
-    });
-
-    app.get('/signup', function(req, res, next){
-        if(!res.locals.subDomain){
-            res.render('signup');
-        } else {
-            next();
-        }
-    });
-
-    app.post('/signin', function(req, res, next){
+    function ensureMainSite(req, res, next) {
         if(!res.locals.subDomain){
             next();
         } else {
             next('route');
         }
-    }, passport.authenticate('local-signin', {
+    }
+
+    app.get('/signin', ensureMainSite, function(req, res){
+        res.render('signin');
+    });
+
+    app.get('/signup', ensureMainSite, function(req, res){
+        res.render('signup');
+    });
+
+    app.post('/signin', ensureMainSite, passport.authenticate('local-signin', {
         successRedirect : '/', // redirect to the secure profile section
         failureRedirect : '/signin', // redirect back to the signup page if there is an error
         failureFlash : false // allow flash messages
     }));
 
-    app.post('/signup', function(req, res, next){
-        if(!res.locals.subDomain){
-            next();
-        } else {
-            next('route');
-        }
-    }, passport.authenticate('local-signup', {
+    app.post('/signup', ensureMainSite, passport.authenticate('local-signup', {
         successRedirect : '/',
         failureRedirect : '/signup',
          failureFlash : false // allow flash messages
     }));
 
-    app.get('/signout', function(req, res, next){
-        if(!res.locals.subDomain){
-            req.logout();
-            res.redirect('/');
-        } else {
-            next();
-        }
+    app.get('/signout', ensureMainSite, function(req, res){
+        req.logout();
+        res.redirect('/');
     });
 
     return app;
