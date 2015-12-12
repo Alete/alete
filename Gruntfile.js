@@ -16,6 +16,9 @@ module.exports = function(grunt) {
                     "outlayer": [
                         "item.js",
                         "outlayer.js"
+                    ],
+                    "font-awesome": [
+                        "css/font-awesome.css"
                     ]
                 },
                 dependencies: {
@@ -85,7 +88,8 @@ module.exports = function(grunt) {
             scripts: {
                 files: [
                     './public/js/*.js',
-                    './public/scss/*.scss'
+                    './public/scss/*.scss',
+                    'bower.json'
                 ],
                 tasks: [
                     'uglify',
@@ -95,6 +99,19 @@ module.exports = function(grunt) {
                 options: {
                     spawn: false,
                 }
+            }
+        },
+        copy: {
+            vender: {
+                files: [{
+                    expand: true,
+                    dot: true,
+                    cwd: 'bower_components/font-awesome', // change this for font-awesome
+                    src: [
+                        'fonts/*.*'
+                    ],
+                    dest: './public/'
+                }]
             }
         }
     });
