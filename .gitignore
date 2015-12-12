@@ -56,6 +56,6 @@ Temporary Items
 
 # Build tools
 bower_components
-_bower.js
-_bower.css
+dist
+.sass-cache
 config.json
