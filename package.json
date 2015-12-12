@@ -30,7 +30,7 @@
     "express-session": "^1.10.3",
     "jade": "^1.6.0",
     "method-override": "^2.3.1",
-    "mongoose": "^4.0.6",
+    "mongoose": "^4.3.1",
     "nconf": "^0.8.2",
     "passport": "^0.3.0",
     "passport-local": "^1.0.0",
