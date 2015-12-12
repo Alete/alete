@@ -60,3 +60,4 @@ dist
 .sass-cache
 config.json
 **/*.min.js
+**/*.min.css
