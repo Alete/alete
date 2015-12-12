@@ -14,6 +14,7 @@
     "maxlen": 1000,
     "mocha": true,
     "noarg": true,
+    "node": true,
     "noempty": true,
     "nonbsp": true,
     "undef": true,
