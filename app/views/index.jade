@@ -2,3 +2,10 @@ extends ./layouts/main
 
 block content
     .container
+        for activity in activityFeed
+            if(activity.type === 'post')
+                - content = activity.content
+            if(activity.type === 'reblog')
+                - content = activity.content.post.content
+            .post(style="padding: 5px; background: black; color: white; width: 500px;")
+                .body #{content.body}
