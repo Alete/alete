@@ -1,18 +1,53 @@
 module.exports = function(grunt) {
+    require('load-grunt-tasks')(grunt);
+
     grunt.initConfig({
-        bower_concat: {
-            all: {
+        bower_concat: { // jshint ignore:line
+            vender: {
                 dest: './dist/vender.js',
                 cssDest: './dist/vender.css',
                 bowerOptions: {
                     relative: false
                 },
+                mainFiles: {
+                    'isotope': [
+                        "dist/isotope.pkgd.min.js"
+                    ],
+                    "outlayer": [
+                        "item.js",
+                        "outlayer.js"
+                    ]
+                },
+                dependencies: {
+                    'isotope': [
+                        "jquery-bridget",
+                        "jquery",
+                    ],
+                    'outlayer': [
+                        "jquery-bridget",
+                        "jquery",
+                    ]
+                }
             }
         },
         uglify: {
-            my_target: {
+            vender: {
                 files: {
                     './public/js/vender.min.js': ['./dist/vender.js']
+                }
+            },
+            core: {
+                files: {
+                    './public/js/core.min.js': ['./public/js/core.js']
+                }
+            }
+        },
+        sass: {
+            options: {
+            },
+            core: {
+                files: {
+                    './dist/core.css': ['./public/scss/core.scss']
                 }
             }
         },
@@ -21,10 +56,18 @@ module.exports = function(grunt) {
                 shorthandCompacting: false,
                 roundingPrecision: -1
             },
-            target: {
+            vender: {
                 files: {
-                    './public/css/vender.min.css': ['./dist/vender.css'],
-                    './public/css/core.min.css': ['./public/css/core.css']
+                    './public/css/vender.min.css': [
+                        './dist/vender.css'
+                    ]
+                }
+            },
+            core: {
+                files: {
+                    './public/css/core.min.css': [
+                        './dist/core.css'
+                    ]
                 }
             }
         },
@@ -32,7 +75,27 @@ module.exports = function(grunt) {
             options: {
                 eqeqeq: true
             },
-            uses_defaults: ['app.js', 'app/**/*.js', 'config/**/*.js']
+            uses_defaults: [ // jshint ignore:line
+                'app.js',
+                'app/**/*.js',
+                'config/**/*.js'
+            ]
+        },
+        watch: {
+            scripts: {
+                files: [
+                    './public/js/*.js',
+                    './public/scss/*.scss'
+                ],
+                tasks: [
+                    'uglify',
+                    'sass',
+                    'cssmin'
+                ],
+                options: {
+                    spawn: false,
+                }
+            }
         }
     });
 
@@ -40,7 +103,13 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['bower_concat', 'uglify', 'cssmin']);
+    grunt.registerTask('default', [
+        'bower_concat',
+        'uglify',
+        'sass',
+        'cssmin'
+    ]);
 
 };
