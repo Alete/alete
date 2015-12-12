@@ -15,6 +15,7 @@
   "dependencies": {
     "jquery": "~2.1.4",
     "isotope": "~2.2.2",
-    "jquery-bridget": "~1.1.0"
+    "jquery-bridget": "~1.1.0",
+    "font-awesome": "~4.5.0"
   }
 }
