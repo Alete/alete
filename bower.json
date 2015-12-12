@@ -1,0 +1,20 @@
+{
+  "name": "alete",
+  "description": "Alete backend",
+  "main": "app.js",
+  "authors": [
+    "Alete"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "blog"
+  ],
+  "homepage": "https://github.com/Alete/alete",
+  "moduleType": [],
+  "private": true,
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "isotope": "~2.2.2",
+    "jquery-bridget": "~1.1.0"
+  }
+}
