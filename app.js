@@ -72,6 +72,18 @@ if (cluster.isMaster) {
     for (var i = 0; i < numCPUs; i++) {
         cluster.fork();
     }
+    cluster.on('exit', function(deadWorker) {
+        // Restart the worker
+        var worker = cluster.fork();
+
+        // Note the process IDs
+        var newPID = worker.process.pid;
+        var oldPID = deadWorker.process.pid;
+
+        // Log the event
+        console.log('worker ' + oldPID + ' died.');
+        console.log('worker ' + newPID + ' born.');
+    });
 } else {
     app.listen(nconf.get('web:port'), function() {
         console.log('The server is running on port %s', nconf.get('web:port'));
