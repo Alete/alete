@@ -12,8 +12,9 @@ html.no-js
         .header
             .title
                 a(href="/") Alete
-            .search
-                input(type="text", name="query", placeholder="Search...")
+            if(user)
+                .search
+                    input(type="text", name="query", placeholder="Search...")
         block content
     script(src="/js/vender.min.js")
     script(src="/js/core.min.js")
