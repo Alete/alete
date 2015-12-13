@@ -15,9 +15,7 @@ module.exports = (function() {
         res.locals.domain = domain;
         res.locals.subDomain = subDomain;
         res.locals.user = req.user;
-        res.locals.layout = {
-            currentPage: req.path
-        };
+        res.locals.currentPage = req.path;
 
         User.findOne({
             url: subDomain
