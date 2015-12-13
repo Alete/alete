@@ -1,0 +1,51 @@
+doctype html
+html.no-js
+    head
+        title= title ? title : 'Alete'
+        meta(name="viewport", content="width=device-width, initial-scale=1")
+        link(href="/css/vender.min.css", rel="stylesheet", type="text/css")
+        link(href="/css/core.min.css", rel="stylesheet", type="text/css")
+        script.
+            document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
+        style.
+            .flip-clock-divider .flip-clock-label {
+                color: white;
+            }
+            html, body {
+                height: 100%;
+            }
+            .main {
+                height: 100%;
+                width: 100%;
+                display: table;
+            }
+            .wrapper {
+                display: table-cell;
+                height: 100%;
+                vertical-align: middle;
+            }
+    body
+        .main
+            .wrapper
+                .container(style="width: 620px; margin-top: 0;")
+                    .clock(style="margin: 0;")
+    script(src="/js/vender.min.js")
+    script.
+        var clock;
+        $(document).ready(function() {
+            // Grab the current date
+            var currentDate = new Date();
+            
+            // Set some date in the future. In this case, it's always Jan 1
+            // This is when Alete will launch!
+            var futureDate = new Date(currentDate.getFullYear() + 1, 0, 1);
+            
+            // Calculate the difference in seconds between the future and current date
+            var diff = futureDate.getTime() / 1000 - currentDate.getTime() / 1000;
+            
+            // Instantiate a coutdown FlipClock
+            clock = $('.clock').FlipClock(diff, {
+                clockFace: 'DailyCounter',
+                countdown: true
+            });
+        });

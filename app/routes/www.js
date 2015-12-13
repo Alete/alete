@@ -10,8 +10,9 @@ module.exports = (function() {
     function ensureAuthenticated(req, res, next) {
         if(req.isAuthenticated()) {
             return next();
+        } else {
+            res.render('countDown');
         }
-        res.redirect('/signin');
     }
 
     function ensureAdmin(req, res, next) {
@@ -82,8 +83,6 @@ module.exports = (function() {
                     });
                 });
             });
-        } else {
-            next();
         }
     });
 
