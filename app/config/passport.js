@@ -45,38 +45,46 @@ exports = module.exports = function(app, passport) {
                     _id: req.body.accessToken
                 }).exec(function(err, accessToken){
                     if(err) { done(err); }
-                    if(accessToken.used){
-                        done('The token is already used!');
-                    } else {
-                        User.findOne({
-                            $or: [
-                                {
-                                    email: email
-                                },
-                                {
-                                    url: req.body.url
+                    if(accessToken){
+                        if(accessToken.used){
+                            done('The token is already used!');
+                        } else {
+                            User.findOne({
+                                $or: [
+                                    {
+                                        email: email
+                                    },
+                                    {
+                                        url: req.body.url
+                                    }
+                                ]
+                            }, function(err, user) {
+                                if (err) { return done(err); }
+                                if (user) {
+                                    return done(null, false, { message: 'That email is already in use or the URL is taken.' });
+                                } else {
+                                    user = new User({
+                                        email: email,
+                                        password: password,
+                                        url: req.body.url
+                                    });
+                                    user.save(function(err, user) {
+                                        if (err) { throw err; }
+                                        return done(null, user);
+                                    });
                                 }
-                            ]
-                        }, function(err, user) {
-                            if (err) { return done(err); }
-                            if (user) {
-                                return done(null, false, { message: 'That email is already in use or the URL is taken.' });
-                            } else {
-                                user = new User({
-                                    email: email,
-                                    password: password,
-                                    url: req.body.url
-                                });
-                                user.save(function(err, user) {
-                                    if (err) { throw err; }
-                                    return done(null, user);
-                                });
-                            }
+                            });
+                        }
+                    } else {
+                        return done(null, false, {
+                            message: 'That accessToken doesn\'t exist'
                         });
                     }
                 });
             } else {
-                return done('You\'re missing your accessToken');
+                return done(null, false, {
+                    message: 'You\'re missing your accessToken'
+                });
             }
         });
     }));
