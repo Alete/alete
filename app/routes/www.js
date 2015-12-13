@@ -12,6 +12,25 @@ module.exports = (function() {
         res.redirect('/signin');
     }
 
+    function limitActivity(req, res, next) {
+        var midnight = (new Date()).setHours(0, 0, 0, 0),
+            now = new Date();
+        Activity.count({
+            owner: req.user._id,
+            date: {
+                $gte: midnight,
+                $lt: now
+            }
+        }).exec(function(err, count){
+            if(err) { return next(err); }
+            if(count < 250){
+                return next();
+            } else {
+                return next('Too many posts!');
+            }
+        });
+    }
+
     app.get('/', ensureAuthenticated, function(req, res, next){
         if(!res.locals.subDomain){
             Follow.find({
@@ -33,7 +52,7 @@ module.exports = (function() {
                             type: 'post'
                         },
                         {
-                            type: 'reblog'
+                            type: 'reflow'
                         }
                     ]
                 }).sort({
@@ -86,13 +105,19 @@ module.exports = (function() {
         }
     });
 
-    app.get('/activity/post', ensureAuthenticated, function(req, res, next){
+    app.get('/activity/post', ensureAuthenticated, limitActivity, function(req, res, next){
         if(!res.locals.subDomain){
             var activity = new Activity({
                 owner: req.user._id,
                 type: 'post',
                 content: {
-                    body: 'This is the post body'
+                    images: [
+                        'https://i.imgur.com/FXNQH7v.jpg',
+                        'https://i.imgur.com/shFGwVY.jpg',
+                        'https://i.imgur.com/p77rGBL.gif'
+                    ],
+                    body: 'This is the post body',
+                    notes: 1
                 }
             });
             activity.save(function(err, post){
@@ -105,18 +130,28 @@ module.exports = (function() {
         }
     });
 
-    app.get('/activity/reblog/:_id', ensureAuthenticated, function(req, res, next){
+    app.post('/activity/reflow/', ensureAuthenticated, limitActivity, function(req, res, next){
         if(!res.locals.subDomain){
             var activity = new Activity({
                 owner: req.user._id,
-                type: 'reblog',
+                type: 'reflow',
                 content: {
-                    post: req.params._id
+                    post: req.body._id
                 }
             });
-            activity.save(function(err, reblog){
-                res.send({
-                    reblog: reblog
+            activity.save(function(err, reflow){
+                Activity.update({
+                    _id: req.body._id,
+                    type: 'post'
+                },{
+                    $inc: {
+                        'content.notes': 1
+                    }
+                }).exec(function(err){
+                    if(err) { next(err); }
+                    res.send({
+                        reflow: reflow
+                    });
                 });
             });
         } else {
@@ -124,19 +159,32 @@ module.exports = (function() {
         }
     });
 
-    app.get('/activity/like/:_id', ensureAuthenticated, function(req, res, next){
+    app.post('/activity/heart/', ensureAuthenticated, limitActivity, function(req, res, next){
         if(!res.locals.subDomain){
-            var activity = new Activity({
-                owner: req.user._id,
-                type: 'like',
-                content: {
-                    post: req.params._id
+            Activity.findOne({
+                'content.post': req.body._id,
+                type: 'heart'
+            }).exec(function(err, heart){
+                if(err) { next(err); }
+                if(!heart){
+                    var activity = new Activity({
+                        owner: req.user._id,
+                        type: 'heart',
+                        content: {
+                            post: req.body._id
+                        }
+                    });
+                    activity.save(function(err, heart){
+                        if(err) { next(err); }
+                        res.send({
+                            heart: heart
+                        });
+                    });
+                } else {
+                    res.send({
+                        heart: heart
+                    });
                 }
-            });
-            activity.save(function(err, reblog){
-                res.send({
-                    reblog: reblog
-                });
             });
         } else {
             next();

@@ -5,7 +5,23 @@ block content
         for activity in activityFeed
             if(activity.type === 'post')
                 - content = activity.content
-            if(activity.type === 'reblog')
+                - id = activity.id
+            if(activity.type === 'reflow')
                 - content = activity.content.post.content
-            .post
+                - id = activity.content.post.id
+            .post(data-id=id)
+                if(content.image)
+                    .image
+                        img(src=content.image)
+                if(content.images)
+                    .images
+                        for image in content.images
+                            img(src=image)
                 .body #{content.body}
+                .meta
+                    span.notes #{content.notes} #{content.notes === 1 ? 'note' : 'notes'}
+                    .actions
+                        a(href="#reflow").reflow
+                            i.fa.fa-bolt
+                        a(href="#heart").heart
+                            i.fa.fa-heart
