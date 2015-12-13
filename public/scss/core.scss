@@ -13,14 +13,57 @@ body {
     margin: 0;
 }
 
+input:focus {
+    outline: none;
+}
+
+a {
+    color: #FFF;
+}
+
 img {
     max-width: 100%;
+    display: block;
+}
+
+.header {
+    width: 100%;
+    height: 40px;
+    background-color: $secondary-color;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    .title {
+        position: fixed;
+        a {
+            font-size: 28px;
+            line-height: 40px;
+            margin-left: 20px;
+            text-decoration: none;
+        }
+    }
+    .search {
+        input {
+            width: 800px;
+            margin: 0 auto;
+            display: block;
+            height: 30px;
+            margin-top: 5px;
+            background-color: $primary-color;
+            color: white;
+            padding: 10px;
+            border: 1px solid #222;
+            border-radius: 2px;
+        }
+    }
 }
 
 .activityFeed {
     width: 800px;
     margin: 0 auto;
-    margin-top: 30px;
+    margin-top: 50px;
     .post {
         background-color: $secondary-color;
         padding: 10px;
@@ -28,5 +71,29 @@ img {
         border-radius: 3px;
         padding: 10px;
         width: 400px;
+        .body {
+            margin: 5px 0;
+        }
+        .actions {
+            float: right;
+            i.fa {
+                font: normal normal normal 16px/1 "FontAwesome";
+                vertical-align: middle;
+                margin-left: 12px;
+            }
+        }
+    }
+}
+
+a {
+    &.heart {
+        &.clicked {
+            color: #D04242;
+        }
+    }
+    &.reflow {
+        &.clicked {
+            color: #FAFF54;
+        }
     }
 }
