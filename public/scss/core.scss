@@ -116,3 +116,20 @@ a {
         }
     }
 }
+
+.error {
+    background-color: $secondary-color;
+    margin: 0 auto;
+    width: 400px;
+    padding: 10px;
+    border: 1px solid #222;
+    border-radius: 3px;
+    text-align: center;
+    img {
+        width: 100%;
+    }
+    span {
+        font-size: 15px;
+        margin-top: 10px;
+    }
+}

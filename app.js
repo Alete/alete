@@ -55,8 +55,13 @@ app.use('/', require('./app/routes/userBlog')); // Blog pages eg. xo.alete.xyz
 // Handle 404
 app.use(function(req, res) {
     res.status(404);
+    var images = [
+        "https://i.imgur.com/p77rGBL.gif",
+        "https://i.imgur.com/O7Mj5Ay.gif"
+    ];
     res.render('http/404', {
-        title: '404: File Not Found'
+        title: '404: File Not Found',
+        image: images[Math.floor(Math.random() * images.length)]
     });
 });
 
