@@ -1,5 +1,6 @@
 var express  = require('express'),
     Follow = require('../models/Follow'),
+    User = require('../models/User'),
     Activity = require('../models/Activity'),
     AccessToken = require('../models/AccessToken');
 
@@ -226,6 +227,30 @@ module.exports = (function() {
             res.send({
                 accessTokens: accessTokens
             });
+        });
+    });
+
+    app.get('/pleaseLetMeJoin', ensureMainSite, function(req, res, next){
+        User.findOne({}).select('_id').sort({
+            _id : -1
+        }).exec(function(err, user){
+            if(err) { next(err); }
+            // If the last user signedup over 10 minutes ago
+            // The 60000 is 1 minute
+            if((((new Date()) - (new Date(user._id.getTimestamp()))) / 60000) > 10){
+                AccessToken.findOne({
+                    used: false
+                }).select('_id').lean().limit(1).exec(function(err, accessToken){
+                    if(err) { next(err); }
+                    res.send({
+                        accessToken: accessToken._id
+                    });
+                });
+            } else {
+                // If the last user signed up less than 10 minutes ago
+                // then don't give them a free accessToken
+                res.status(200).send('NO!');
+            }
         });
     });
 
