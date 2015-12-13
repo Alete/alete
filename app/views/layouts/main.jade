@@ -9,7 +9,11 @@ html.no-js
             document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
         block styles
     body
-        .sidebar
+        .header
+            .title
+                a(href="/") Alete
+            .search
+                input(type="text", name="query", placeholder="Search...")
         block content
     script(src="/js/vender.min.js")
     script(src="/js/core.min.js")
