@@ -33,6 +33,7 @@ module.exports = (function() {
 
     app.get('/', ensureAuthenticated, function(req, res, next){
         if(!res.locals.subDomain){
+            var skip = (req.query.page > 0 ? (req.query.page-1) * 20 : 0);
             Follow.find({
                 follower: req.user._id
             }).exec(function(err, following){
@@ -57,7 +58,7 @@ module.exports = (function() {
                     ]
                 }).sort({
                     _id: 'desc'
-                }).limit(20).populate('content.post').exec(function(err, activityFeed){
+                }).skip(skip).limit(20).populate('content.post').exec(function(err, activityFeed){
                     // This is the activity of all of the people the signed in user follows
                     res.render('index', {
                         activityFeed: activityFeed

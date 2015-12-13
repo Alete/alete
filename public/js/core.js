@@ -34,4 +34,36 @@ $(document).ready(function(){
         }
         return false;
     });
+
+    var currentPage = 1;
+    var nextPage = 2;
+    var loadingNextPage = false;
+    var noMorePages = false;
+    function loadPages(){
+        loadingNextPage = true;
+        $.get('/?page=' + nextPage, function(data) {
+            var posts = $('<div>').html(data).find('.activityFeed').children();
+            if(posts.length > 0) {
+                $('.activityFeed').append(posts);
+                $(posts).hide().imagesLoaded(function() {
+                    $(posts).fadeIn();
+                    $('.activityFeed').isotope('insert', $(posts));
+                    currentPage++;
+                    nextPage++;
+                    loadingNextPage = false;
+                    if($(window).height() - $('.post').last().offset().top > 50){
+                        loadPages();
+                    }
+                });
+            } else {
+                noMorePages = true;
+            }
+        });
+    }
+
+    $(window).on('scroll', function() {
+        if(($(window).scrollTop() >= ($(document).height() - $(window).height() - $('.post').last().height() + 200)) && !loadingNextPage && !noMorePages){
+            loadPages();
+        }
+    });
 });
