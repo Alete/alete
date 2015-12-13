@@ -29,7 +29,7 @@ module.exports = (function() {
     app.post('/signup', ensureMainSite, passport.authenticate('local-signup', {
         successRedirect : '/',
         failureRedirect : '/signup',
-         failureFlash : false // allow flash messages
+        failureFlash : false // allow flash messages
     }));
 
     app.get('/signout', ensureMainSite, function(req, res){

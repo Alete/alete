@@ -1,5 +1,6 @@
 var LocalStrategy = require('passport-local').Strategy,
-    User  = require('../models/User');
+    User = require('../models/User'),
+    AccessToken = require('../models/AccessToken');
 
 exports = module.exports = function(app, passport) {
     passport.serializeUser(function(user, done) {
@@ -12,12 +13,15 @@ exports = module.exports = function(app, passport) {
         });
     });
 
-    passport.use('local-signin', new LocalStrategy(function(username, password, done) {
-        // var criteria = (username.indexOf('@') === -1) ? {username: username} : {email: username};
-        // User.findOne(criteria, function(err, user) {
-        User.findOne({username: username}, function(err, user) {
+    passport.use('local-signin', new LocalStrategy({
+        usernameField : 'email',
+        passwordField : 'password',
+    }, function(email, password, done) {
+        User.findOne({
+            email: email
+        }, function(err, user) {
             if (err) { return done(err); }
-            if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
+            if (!user) { return done(null, false, { message: 'Unknown user ' + email }); }
             user.comparePassword(password, function(err, isMatch) {
                 if (err) { return done(err); }
                 if(isMatch) {
@@ -30,37 +34,50 @@ exports = module.exports = function(app, passport) {
     }));
 
     passport.use('local-signup', new LocalStrategy({
-        usernameField : 'username',
+        usernameField : 'email',
         passwordField : 'password',
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
-    function(req, username, password, done) {
+    function(req, email, password, done) {
         process.nextTick(function() {
-            User.findOne({
-                $or: [
-                    {
-                        username: username
-                    },
-                    {
-                        url: req.body.url
+            if(req.body.accessToken){
+                AccessToken.findOne({
+                    _id: req.body.accessToken
+                }).exec(function(err, accessToken){
+                    if(err) { done(err); }
+                    if(accessToken.used){
+                        done('The token is already used!');
+                    } else {
+                        User.findOne({
+                            $or: [
+                                {
+                                    email: email
+                                },
+                                {
+                                    url: req.body.url
+                                }
+                            ]
+                        }, function(err, user) {
+                            if (err) { return done(err); }
+                            if (user) {
+                                return done(null, false, { message: 'That email is already in use or the URL is taken.' });
+                            } else {
+                                user = new User({
+                                    email: email,
+                                    password: password,
+                                    url: req.body.url
+                                });
+                                user.save(function(err, user) {
+                                    if (err) { throw err; }
+                                    return done(null, user);
+                                });
+                            }
+                        });
                     }
-                ]
-            }, function(err, user) {
-                if (err) { return done(err); }
-                if (user) {
-                    return done(null, false, { message: 'That username or url is already taken.' });
-                } else {
-                    user = new User({
-                        username: username,
-                        password: password,
-                        url: req.body.url
-                    });
-                    user.save(function(err, user) {
-                        if (err) { throw err; }
-                        return done(null, user);
-                    });
-                }
-            });
+                });
+            } else {
+                return done('You\'re missing your accessToken');
+            }
         });
     }));
 };

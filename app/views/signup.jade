@@ -1,16 +1,19 @@
 extends ./layouts/main
 
 block content
-    .container
-        form(action="/signup", method="post").styled
+    .container.authForm
+        form(action="/signup", method="post")
             div
-                label Username: 
-                input(type="text", name="username")
+                label Email: 
+                input(type="text", name="email")
             div
                 label Password: 
                 input(type="password", name="password")
             div
-                label url: 
+                label URL: 
                 input(type="text", name="url")
+            div
+                label accessToken: 
+                input(type="text", name="accessToken")
             div
                 input(type="submit", value="Signup").button

@@ -1,6 +1,7 @@
 var express  = require('express'),
     Follow = require('../models/Follow'),
-    Activity = require('../models/Activity');
+    Activity = require('../models/Activity'),
+    AccessToken = require('../models/AccessToken');
 
 module.exports = (function() {
     var app = express.Router();
@@ -10,6 +11,13 @@ module.exports = (function() {
             return next();
         }
         res.redirect('/signin');
+    }
+
+    function ensureAdmin(req, res, next) {
+        if(req.user.isAdmin) {
+            return next();
+        }
+        return next('route');
     }
 
     function limitActivity(req, res, next) {
@@ -31,7 +39,15 @@ module.exports = (function() {
         });
     }
 
-    app.get('/', ensureAuthenticated, function(req, res, next){
+    function ensureMainSite(req, res, next) {
+        if(!res.locals.subDomain){
+            next();
+        } else {
+            next('route');
+        }
+    }
+
+    app.get('/', ensureMainSite, ensureAuthenticated, function(req, res, next){
         if(!res.locals.subDomain){
             var skip = (req.query.page > 0 ? (req.query.page-1) * 20 : 0);
             Follow.find({
@@ -70,7 +86,7 @@ module.exports = (function() {
         }
     });
 
-    app.get('/user', ensureAuthenticated, function(req, res, next){
+    app.get('/user', ensureMainSite, ensureAuthenticated, function(req, res, next){
         if(!res.locals.subDomain){
             res.send({
                 user: req.user
@@ -80,7 +96,7 @@ module.exports = (function() {
         }
     });
 
-    app.get('/following', ensureAuthenticated, function(req, res, next){
+    app.get('/following', ensureMainSite, ensureAuthenticated, function(req, res, next){
         if(!res.locals.subDomain){
             Follow.find({
                 follower: req.user._id
@@ -92,7 +108,7 @@ module.exports = (function() {
         }
     });
 
-    app.get('/follow/:_id', ensureAuthenticated, function(req, res, next){
+    app.get('/follow/:_id', ensureMainSite, ensureAuthenticated, function(req, res, next){
         if(!res.locals.subDomain){
             var follow = new Follow({
                 followee: req.params._id,
@@ -106,7 +122,7 @@ module.exports = (function() {
         }
     });
 
-    app.get('/activity/post', ensureAuthenticated, limitActivity, function(req, res, next){
+    app.get('/activity/post', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
         if(!res.locals.subDomain){
             var activity = new Activity({
                 owner: req.user._id,
@@ -131,7 +147,7 @@ module.exports = (function() {
         }
     });
 
-    app.post('/activity/reflow/', ensureAuthenticated, limitActivity, function(req, res, next){
+    app.post('/activity/reflow/', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
         if(!res.locals.subDomain){
             var activity = new Activity({
                 owner: req.user._id,
@@ -160,7 +176,7 @@ module.exports = (function() {
         }
     });
 
-    app.post('/activity/heart/', ensureAuthenticated, limitActivity, function(req, res, next){
+    app.post('/activity/heart/', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
         if(!res.locals.subDomain){
             Activity.findOne({
                 'content.post': req.body._id,
@@ -190,6 +206,27 @@ module.exports = (function() {
         } else {
             next();
         }
+    });
+
+    app.get('/tokenGen', ensureMainSite, ensureAuthenticated, ensureAdmin, function(req, res, next){
+        var accessToken = new AccessToken();
+        accessToken.save(function(err, accessToken){
+            if(err) { next(err); }
+            res.send({
+                accessToken: accessToken
+            });
+        });
+    });
+
+    app.get('/unusedTokens', ensureMainSite, ensureAuthenticated, ensureAdmin, function(req, res, next){
+        AccessToken.find({
+            used: false
+        }).select('_id').lean().limit(20).exec(function(err, accessTokens){
+            if(err) { next(err); }
+            res.send({
+                accessTokens: accessTokens
+            });
+        });
     });
 
     return app;

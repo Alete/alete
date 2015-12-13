@@ -1,11 +1,11 @@
 extends ./layouts/main
 
 block content
-    .container
+    .container.authForm
         form(action="/signin", method="post").styled
             div
-                label Username:
-                input(type="text", name="username")
+                label Email:
+                input(type="text", name="email")
             div
                 label Password:
                 input(type="password", name="password")
