@@ -1,6 +1,12 @@
 extends ./layouts/main
 
 block content
+    .container.activityForm
+        form(action="/activity/post", method="post", enctype="multipart/form-data")
+            input(type="text", name="text", id="text")
+            input(type="file", name="file", id="file")
+            input(type="submit", value="Upload Image").button
+    </form>
     .container.activityFeed
         for activity in activityFeed
             if(activity.type === 'post')
@@ -12,11 +18,11 @@ block content
             .post(data-id=id)
                 if(content.image)
                     .image
-                        img(src=content.image)
+                        img(src=content.image.link)
                 if(content.images)
                     .images
                         for image in content.images
-                            img(src=image)
+                            img(src=image.link)
                 .body #{content.body}
                 .meta
                     span.notes #{content.notes} #{content.notes === 1 ? 'note' : 'notes'}

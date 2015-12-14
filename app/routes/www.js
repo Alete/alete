@@ -1,4 +1,6 @@
 var express  = require('express'),
+    imgur = require('imgur'),
+    multer  = require('multer'),
     Follow = require('../models/Follow'),
     User = require('../models/User'),
     Activity = require('../models/Activity'),
@@ -6,6 +8,9 @@ var express  = require('express'),
 
 module.exports = (function() {
     var app = express.Router();
+    var upload = multer({
+        dest: '/tmp/alete/uploads/'
+    });
 
     function ensureAuthenticated(req, res, next) {
         if(req.isAuthenticated()) {
@@ -49,7 +54,7 @@ module.exports = (function() {
         }
     }
 
-    app.get('/', ensureMainSite, ensureAuthenticated, function(req, res, next){
+    app.get('/', ensureMainSite, ensureAuthenticated, function(req, res){
         if(!res.locals.subDomain){
             var skip = (req.query.page > 0 ? (req.query.page-1) * 20 : 0);
             Follow.find({
@@ -108,32 +113,29 @@ module.exports = (function() {
         }
     });
 
-    app.get('/follow/:_id', ensureMainSite, ensureAuthenticated, function(req, res, next){
-        if(!res.locals.subDomain){
-            var follow = new Follow({
-                followee: req.params._id,
-                follower: req.user._id
-            });
-            follow.save(function(err, follow){
-                res.send(follow);
-            });
-        } else {
-            next();
-        }
+    app.get('/follow/:_id', ensureMainSite, ensureAuthenticated, function(req, res){
+        var follow = new Follow({
+            followee: req.params._id,
+            follower: req.user._id
+        });
+        follow.save(function(err, follow){
+            res.send(follow);
+        });
     });
 
-    app.get('/activity/post', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
-        if(!res.locals.subDomain){
+    app.post('/activity/post', ensureMainSite, ensureAuthenticated, limitActivity, upload.single('file'), function(req, res, next){
+        imgur.setClientId('f7b02cbb57f42b5');
+        imgur.uploadFile(req.file.path).then(function(json){
+            res.send(json.data);
             var activity = new Activity({
                 owner: req.user._id,
                 type: 'post',
                 content: {
-                    images: [
-                        'https://i.imgur.com/FXNQH7v.jpg',
-                        'https://i.imgur.com/shFGwVY.jpg',
-                        'https://i.imgur.com/p77rGBL.gif'
-                    ],
-                    body: 'This is the post body',
+                    image: {
+                        link: json.data.link,
+                        deleteHash: json.data.deletehash
+                    },
+                    body: req.body.text,
                     notes: 1
                 }
             });
@@ -142,70 +144,62 @@ module.exports = (function() {
                     post: post
                 });
             });
-        } else {
-            next();
-        }
+        }).catch(function(err){
+            next(err);
+        });
     });
 
     app.post('/activity/reflow/', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
-        if(!res.locals.subDomain){
-            var activity = new Activity({
-                owner: req.user._id,
-                type: 'reflow',
-                content: {
-                    post: req.body._id
+        var activity = new Activity({
+            owner: req.user._id,
+            type: 'reflow',
+            content: {
+                post: req.body._id
+            }
+        });
+        activity.save(function(err, reflow){
+            Activity.update({
+                _id: req.body._id,
+                type: 'post'
+            },{
+                $inc: {
+                    'content.notes': 1
                 }
-            });
-            activity.save(function(err, reflow){
-                Activity.update({
-                    _id: req.body._id,
-                    type: 'post'
-                },{
-                    $inc: {
-                        'content.notes': 1
-                    }
-                }).exec(function(err){
-                    if(err) { next(err); }
-                    res.send({
-                        reflow: reflow
-                    });
+            }).exec(function(err){
+                if(err) { next(err); }
+                res.send({
+                    reflow: reflow
                 });
             });
-        } else {
-            next();
-        }
+        });
     });
 
     app.post('/activity/heart/', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
-        if(!res.locals.subDomain){
-            Activity.findOne({
-                'content.post': req.body._id,
-                type: 'heart'
-            }).exec(function(err, heart){
-                if(err) { next(err); }
-                if(!heart){
-                    var activity = new Activity({
-                        owner: req.user._id,
-                        type: 'heart',
-                        content: {
-                            post: req.body._id
-                        }
-                    });
-                    activity.save(function(err, heart){
-                        if(err) { next(err); }
-                        res.send({
-                            heart: heart
-                        });
-                    });
-                } else {
+        Activity.findOne({
+            'content.post': req.body._id,
+            type: 'heart'
+        }).exec(function(err, heart){
+            if(err) { next(err); }
+            if(!heart){
+                var activity = new Activity({
+                    owner: req.user._id,
+                    type: 'heart',
+                    content: {
+                        post: req.body._id
+                    }
+                });
+                activity.save(function(err, heart){
+                    if(err) { next(err); }
                     res.send({
                         heart: heart
                     });
-                }
-            });
-        } else {
-            next();
-        }
+                });
+            } else {
+                res.send({
+                    heart: heart
+                });
+            }
+        });
     });
 
     app.get('/tokenGen', ensureMainSite, ensureAuthenticated, ensureAdmin, function(req, res, next){
