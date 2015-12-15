@@ -1,6 +1,7 @@
 var express = require('express'),
     imgur = require('imgur'),
     multer  = require('multer'),
+    toobusy = require('toobusy-js'),
     Follow = require('../models/Follow'),
     User = require('../models/User'),
     Activity = require('../models/Activity'),
@@ -54,41 +55,51 @@ module.exports = (function() {
         }
     }
 
+    // The absolute first piece of middle-ware we would register, to block requests
+    // before we spend any time on them.
+    app.use(function(req, res, next) {
+        // check if we're toobusy() - note, this call is extremely fast, and returns
+        // state that is cached at a fixed interval
+        if (toobusy()){
+            res.status(503).send("I'm busy right now, sorry.");
+        } else {
+            next();
+        }
+    });
+
     app.get('/', ensureMainSite, ensureAuthenticated, function(req, res){
-        if(!res.locals.subDomain){
-            var skip = (req.query.page > 0 ? (req.query.page-1) * 20 : 0);
-            Follow.find({
-                follower: req.user._id
-            }).exec(function(err, following){
-                // This will give us the people the signed in user follows
-                // We need to get it to an array to use with $in
-                // We add the current user otherwise they're missing their own posts
-                var activityNeeded = [req.user._id];
-                for(var i = 0; i < following.length; i++){
-                    activityNeeded.push(following[i].followee);
-                }
-                Activity.find({
-                    owner: {
-                        $in: activityNeeded
+        var skip = (req.query.page > 0 ? (req.query.page-1) * 20 : 0);
+        Follow.find({
+            follower: req.user._id
+        }).exec(function(err, following){
+            // This will give us the people the signed in user follows
+            // We need to get it to an array to use with $in
+            // We add the current user otherwise they're missing their own posts
+            var activityNeeded = [req.user._id];
+            for(var i = 0; i < following.length; i++){
+                activityNeeded.push(following[i].followee);
+            }
+            Activity.find({
+                owner: {
+                    $in: activityNeeded
+                },
+                $or: [
+                    {
+                        type: 'post'
                     },
-                    $or: [
-                        {
-                            type: 'post'
-                        },
-                        {
-                            type: 'reflow'
-                        }
-                    ]
-                }).sort({
-                    _id: 'desc'
-                }).skip(skip).limit(20).populate('content.post').exec(function(err, activityFeed){
-                    // This is the activity of all of the people the signed in user follows
-                    res.render('index', {
-                        activityFeed: activityFeed
-                    });
+                    {
+                        type: 'reflow'
+                    }
+                ]
+            }).sort({
+                _id: 'desc'
+            }).skip(skip).limit(20).populate('content.post').exec(function(err, activityFeed){
+                // This is the activity of all of the people the signed in user follows
+                res.render('index', {
+                    activityFeed: activityFeed
                 });
             });
-        }
+        });
     });
 
     app.get('/user', ensureMainSite, ensureAuthenticated, function(req, res, next){
