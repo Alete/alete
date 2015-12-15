@@ -1,7 +1,7 @@
 {
   "name": "alete",
   "version": "1.0.0",
-  "description": "Alete backend",
+  "description": "Alete",
   "main": "app.js",
   "scripts": {
     "test": "grunt test",
@@ -12,7 +12,8 @@
     "url": "git+https://github.com/Alete/alete.git"
   },
   "keywords": [
-    "blog"
+    "blog",
+    "social"
   ],
   "author": "Alete",
   "license": "MIT",
