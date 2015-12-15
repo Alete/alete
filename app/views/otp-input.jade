@@ -1,0 +1,10 @@
+extends ./layouts/main
+
+block content
+    .container.authForm
+        form(action="/otp-input", method="post")
+            div
+                label OTP:
+                input(type="text", name="otp")
+            div
+                input(type="submit", value="Signin").button

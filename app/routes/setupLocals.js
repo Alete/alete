@@ -8,7 +8,7 @@ module.exports = (function() {
         var host = req.headers.host.replace(/^www\./,''),
             domain = host.split(':')[0],
             port = host.split(':')[1],
-            subDomain = domain.substring(0, domain.lastIndexOf('.alete.xyz'));
+            subDomain = domain.substring(0, domain.lastIndexOf('.al.xyz'));
 
         res.locals.host = host;
         res.locals.port = port;

@@ -1,0 +1,8 @@
+extends ./layouts/main
+
+block content
+    .container.authForm
+        | Scan this QR Code in Google Authenticator
+        img(src=qrImage, style="padding: 10px; background: white;")
+        | - or enter this key manually -
+        | #{key}
