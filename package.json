@@ -37,7 +37,10 @@
     "nconf": "^0.8.2",
     "passport": "^0.3.0",
     "passport-local": "^1.0.0",
+    "passport-totp": "0.0.2",
     "serve-favicon": "^2.3.0",
+    "sprintf-js": "^1.0.3",
+    "thirty-two": "^1.0.1",
     "toobusy-js": "^0.4.2",
     "underscore": "^1.8.0"
   },

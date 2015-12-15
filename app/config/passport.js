@@ -1,4 +1,6 @@
 var LocalStrategy = require('passport-local').Strategy,
+    TotpStrategy = require('passport-totp').Strategy,
+    base32 = require('thirty-two'),
     User = require('../models/User'),
     AccessToken = require('../models/AccessToken');
 
@@ -87,5 +89,16 @@ exports = module.exports = function(app, passport) {
                 });
             }
         });
+    }));
+
+    passport.use(new TotpStrategy(function(user, done) {
+        // The user object carries all user related information, including
+        // the shared-secret (key) and password.
+        var key = user.key;
+        if(!key) {
+            return done(new Error('No key'));
+        } else {
+            return done(null, base32.decode(key), 30); //30 = valid key period
+        }
     }));
 };

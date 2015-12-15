@@ -6,6 +6,14 @@ var userSchema = new mongoose.Schema({
     email: String,
     password: String,
     url: String,
+    otp: {
+        key: {
+            required: true,
+            type: String,
+            default: ''
+        },
+        period: Number
+    },
     isAdmin: {
         type: Boolean,
         default: false
