@@ -1,4 +1,4 @@
-var express  = require('express'),
+var express = require('express'),
     User = require('../models/User');
 
 module.exports = (function() {

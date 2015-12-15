@@ -1,4 +1,4 @@
-var express  = require('express'),
+var express = require('express'),
     imgur = require('imgur'),
     multer  = require('multer'),
     Follow = require('../models/Follow'),
