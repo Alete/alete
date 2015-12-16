@@ -5,6 +5,7 @@ var express = require('express'),
     session = require('express-session'),
     MongoStore = require('connect-mongo')(session),
     compression = require('compression'),
+    i18n = require('i18n'),
     favicon = require('serve-favicon'),
     mongoose = require('mongoose'),
     passport = require('passport'),
@@ -22,8 +23,20 @@ mongoose.connect('mongodb://' + nconf.get('database:host') + ':' + nconf.get('da
 
 var app = express();
 
-app.disable('x-powered-by');
+i18n.configure({
+    locales:['en', 'de'],
+    directory: __dirname + '/locales'
+});
 
+app.use(function(req, res, next) {
+    // add __ as i18n handler for jade
+    res.locals.__ = res.__ = function() {
+        return i18n.__.apply(req, arguments);
+    };
+    next();
+});
+
+app.disable('x-powered-by');
 app.set('views', __dirname + '/app/views');
 app.set('view engine', 'jade');
 app.use(compression());

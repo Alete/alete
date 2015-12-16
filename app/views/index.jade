@@ -5,7 +5,7 @@ block content
         form(action="/activity/post", method="post", enctype="multipart/form-data")
             input(type="text", name="text", id="text")
             input(type="file", name="file", id="file")
-            input(type="submit", value="Upload Image").button
+            input(type="submit", value=__('Upload Image')).button
     .container.activityFeed
         for activity in activityFeed
             if(activity.type === 'post')
@@ -24,7 +24,7 @@ block content
                             img(src=image.link)
                 .body #{content.body}
                 .meta
-                    span.notes #{content.notes} #{content.notes === 1 ? 'note' : 'notes'}
+                    span.notes #{content.notes} #{content.notes === 1 ? __('note') : __('notes')}
                     .actions
                         a(href="#reflow").reflow
                             i.fa.fa-bolt
