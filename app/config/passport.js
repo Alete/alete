@@ -8,7 +8,7 @@ exports = module.exports = function(app, passport) {
     });
 
     passport.deserializeUser(function(id, done) {
-        User.findById(id, function (err, user) {
+        User.findById(id).populate('blogs').exec(function (err, user) {
             done(err, user);
         });
     });

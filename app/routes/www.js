@@ -5,7 +5,8 @@ var express = require('express'),
     Follow = require('../models/Follow'),
     User = require('../models/User'),
     Activity = require('../models/Activity'),
-    AccessToken = require('../models/AccessToken');
+    AccessToken = require('../models/AccessToken'),
+    Blog = require('../models/Blog');
 
 module.exports = (function() {
     var app = express.Router();
@@ -48,7 +49,7 @@ module.exports = (function() {
     }
 
     function ensureMainSite(req, res, next) {
-        if(!res.locals.blog.url){
+        if(!Object.keys(res.locals.blog).length){
             next();
         } else {
             next('route');
@@ -108,11 +109,47 @@ module.exports = (function() {
         });
     });
 
-    app.get('/following', ensureMainSite, ensureAuthenticated, function(req, res){
-        Follow.find({
-            follower: req.user._id
-        }).exec(function(err, following){
-            res.send(following);
+    app.get('/blogs', ensureMainSite, ensureAuthenticated, function(req, res){
+        res.send({
+            blogs: req.user.blogs
+        });
+    });
+
+    app.get('/following/:blogUrl', ensureMainSite, ensureAuthenticated, function(req, res, next){
+        Blog.findOne({
+            url: req.params.blogUrl
+        }).exec(function(err, blog){
+            if(err) { next(err); }
+            if(blog) {
+                Follow.find({
+                    follower: blog.id
+                }).exec(function(err, following){
+                    if(err) { next(err); }
+                    res.send({
+                        total: following.length,
+                        following: following
+                    });
+                });
+            }
+        });
+    });
+
+    app.get('/followers/:blogUrl', ensureMainSite, ensureAuthenticated, function(req, res, next){
+        Blog.findOne({
+            url: req.params.blogUrl
+        }).exec(function(err, blog){
+            if(err) { next(err); }
+            if(blog) {
+                Follow.find({
+                    followee: blog.id
+                }).exec(function(err, followers){
+                    if(err) { next(err); }
+                    res.send({
+                        total: followers.length,
+                        followers: followers
+                    });
+                });
+            }
         });
     });
 
@@ -131,7 +168,7 @@ module.exports = (function() {
         imgur.uploadFile(req.file.path).then(function(json){
             res.send(json.data);
             var activity = new Activity({
-                owner: req.user._id,
+                owner: req.user.blogs[0].id, // @TODO This should be the current blog you're using
                 type: 'post',
                 content: {
                     image: {
@@ -154,7 +191,7 @@ module.exports = (function() {
 
     app.post('/activity/reflow/', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
         var activity = new Activity({
-            owner: req.user._id,
+            owner: req.user.blogs[0].id, // @TODO This should be the current blog you're using
             type: 'reflow',
             content: {
                 post: req.body._id
@@ -185,7 +222,7 @@ module.exports = (function() {
             if(err) { next(err); }
             if(!heart){
                 var activity = new Activity({
-                    owner: req.user._id,
+                    owner: req.user.blogs[0].id, // @TODO This should be the current blog you're using
                     type: 'heart',
                     content: {
                         post: req.body._id
