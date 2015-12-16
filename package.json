@@ -4,7 +4,7 @@
   "description": "Alete backend",
   "main": "app.js",
   "scripts": {
-    "test": "grunt test",
+    "test": "snyk test && grunt test",
     "start": "nodemon --watch app --watch app.js --harmony app.js"
   },
   "repository": {
@@ -39,7 +39,8 @@
     "passport": "^0.3.0",
     "serve-favicon": "^2.3.0",
     "toobusy-js": "^0.4.2",
-    "underscore": "^1.8.0"
+    "underscore": "^1.8.0",
+    "snyk": "^1.6.1"
   },
   "devDependencies": {
     "grunt-bower-concat": "^0.6.0",
