@@ -62,7 +62,7 @@ $(document).ready(function(){
     }
 
     $(window).on('scroll', function() {
-        if(($(window).scrollTop() >= ($(document).height() - $(window).height() - $('.post').last().height() + 200)) && !loadingNextPage && !noMorePages){
+        if(($(window).scrollTop() >= ($(document).height() - $(window).height() - 200)) && !loadingNextPage && !noMorePages){
             loadPages();
         }
     });
