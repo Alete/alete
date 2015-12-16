@@ -15,6 +15,14 @@ html.no-js
             if(user)
                 .search
                     input(type="text", name="query", placeholder="Search...")
+                .account
+                    ul.dropdown
+                        a
+                            i.fa.fa-lg.fa-cog
+                        li
+                            a(href="/account") Account
+                            a(href="/settings") Settings
+                            a(href="/signout") Signout
         block content
     script(src="/js/vender.min.js")
     script(src="/js/core.min.js")

@@ -5,12 +5,17 @@ $font-color: #dfdfdf;
 
 @import 'reset';
 @import 'button';
+@import 'dropdown';
 
 body {
     background-color: $primary-color;
     color: $font-color;
     font: 11px $font-stack;
     margin: 0;
+}
+
+ul {
+    list-style-type: none;
 }
 
 input:focus {
@@ -78,6 +83,42 @@ img {
             padding: 10px;
             border: 1px solid #222;
             border-radius: 2px;
+            @media (max-width: 1200px) {
+                width: 400px;
+            }
+        }
+        @media (max-width: 960px) {
+            display: none;
+        }
+    }
+    .account {
+        position: fixed;
+        right: 0;
+        top: 0;
+        height: 40px;
+        ul.dropdown {
+            margin: 0 10px 0 0;
+            padding: 0;
+            float: left;
+            line-height: 40px;
+            >a {
+                display: block;
+                text-align: right;
+            }
+            a {
+                text-decoration: none;
+                background-color: $secondary-color;
+                padding: 10px;
+                height: 40px;
+                line-height: 20px;
+                &:hover {
+                    color: $secondary-color;
+                    background-color: white;
+                }
+            }
+        }
+        input {
+            height: 25px;
         }
     }
 }
@@ -101,6 +142,12 @@ img {
                 margin-left: 12px;
             }
         }
+        @media (max-width: 1200px) {
+            width: 400px;
+        }
+    }
+    @media (max-width: 1200px) {
+        width: 400px;
     }
 }
 
