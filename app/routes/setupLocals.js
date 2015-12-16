@@ -26,6 +26,7 @@ module.exports = (function() {
             } else {
                 if(user){
                     res.locals.blog.url = user.url;
+                    res.locals.blog.followers = 1;
                     res.locals.blog.customDomain = user.customDomain;
                 }
                 next();

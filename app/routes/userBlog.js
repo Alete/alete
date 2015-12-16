@@ -33,6 +33,7 @@ module.exports = (function() {
     app.get('/', ensureBlog, ensureBlogExists, redirectToCustomDomain, function(req, res, next){
         async.waterfall([
             function(callback) {
+                // Try to find the user's theme
                 Theme.findOne({
                     url: res.locals.blog.url
                 }).lean().sort('date').exec(function(err, theme){
@@ -40,6 +41,7 @@ module.exports = (function() {
                     callback(null, theme);
                 });
             }, function(theme, callback) {
+                // If we can't find their theme then we use the default theme
                 if(!theme){
                     Theme.findOne({
                         url: '============='
@@ -55,16 +57,16 @@ module.exports = (function() {
             if(err) { next(err); }
             if(theme){
                 // Add any extras we need to locals
-                // We use if statments as we don't want to
-                // override their own vars
-                if(!theme.locals.url){
-                    theme.locals.url = res.locals.blog.url;
-                }
+                theme.locals.url = res.locals.blog.url;
+                theme.locals.followers = res.locals.blog.followers;
 
                 var fn = jade.compile(theme.jade, {});
                 var html = fn(theme.locals);
                 res.send(html);
             } else {
+                // If we still don't have a theme var then we're
+                // missing the default theme and should just tell them
+                // This should really only ever happen in dev
                 next('The default theme is missing!');
             }
         });
