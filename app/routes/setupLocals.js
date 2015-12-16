@@ -8,23 +8,25 @@ module.exports = (function() {
         var host = req.headers.host.replace(/^www\./,''),
             domain = host.split(':')[0],
             port = host.split(':')[1],
-            subDomain = domain.substring(0, domain.lastIndexOf('.alete.xyz'));
+            blog = domain.substring(0, domain.lastIndexOf('.al.xyz'));
 
         res.locals.host = host;
         res.locals.port = port;
         res.locals.domain = domain;
-        res.locals.subDomain = subDomain;
+        res.locals.blog = {};
+        res.locals.blog.url = blog;
         res.locals.user = req.user;
         res.locals.currentPage = req.path;
 
-        User.findOne({
-            url: subDomain
-        }).exec(function(err, user){
+        var criteria = domain.indexOf('.al.xyz') > 0 ? { url: blog } : { customDomain: domain };
+
+        User.findOne(criteria).exec(function(err, user){
             if(err) {
                 next(err);
             } else {
                 if(user){
-                    res.locals.userBlog = user.url;
+                    res.locals.blog.url = user.url;
+                    res.locals.blog.customDomain = user.customDomain;
                 }
                 next();
             }

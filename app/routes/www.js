@@ -48,7 +48,7 @@ module.exports = (function() {
     }
 
     function ensureMainSite(req, res, next) {
-        if(!res.locals.subDomain){
+        if(!res.locals.blog.url){
             next();
         } else {
             next('route');
@@ -102,26 +102,18 @@ module.exports = (function() {
         });
     });
 
-    app.get('/user', ensureMainSite, ensureAuthenticated, function(req, res, next){
-        if(!res.locals.subDomain){
-            res.send({
-                user: req.user
-            });
-        } else {
-            next();
-        }
+    app.get('/user', ensureMainSite, ensureAuthenticated, function(req, res){
+        res.send({
+            user: req.user
+        });
     });
 
-    app.get('/following', ensureMainSite, ensureAuthenticated, function(req, res, next){
-        if(!res.locals.subDomain){
-            Follow.find({
-                follower: req.user._id
-            }).exec(function(err, following){
-                res.send(following);
-            });
-        } else {
-            next();
-        }
+    app.get('/following', ensureMainSite, ensureAuthenticated, function(req, res){
+        Follow.find({
+            follower: req.user._id
+        }).exec(function(err, following){
+            res.send(following);
+        });
     });
 
     app.get('/follow/:_id', ensureMainSite, ensureAuthenticated, function(req, res){

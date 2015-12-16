@@ -6,6 +6,7 @@ var userSchema = new mongoose.Schema({
     email: String,
     password: String,
     url: String,
+    customDomain: String,
     isAdmin: {
         type: Boolean,
         default: false

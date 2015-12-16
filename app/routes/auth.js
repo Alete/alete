@@ -5,7 +5,7 @@ module.exports = (function() {
     var app = express.Router();
 
     function ensureMainSite(req, res, next) {
-        if(!res.locals.subDomain){
+        if(!res.locals.blog.url){
             next();
         } else {
             next('route');
