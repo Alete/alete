@@ -14,15 +14,23 @@ html.no-js
                 a(href="/") Alete
             if(user)
                 .search
-                    input(type="text", name="query", placeholder="Search...")
-                .account
-                    ul.dropdown
-                        a
-                            i.fa.fa-lg.fa-cog
-                        li
-                            a(href="/account") Account
-                            a(href="/settings") Settings
-                            a(href="/signout") Signout
+                    input(type="text", name="query", placeholder=__('Search') + '...')
+                nav.nav
+                    .blogs
+                        ul.dropdown
+                            a
+                                i.fa.fa-lg.fa-th
+                            li
+                                for blog in user.blogs
+                                    a(href="/blog/" + blog.url) #{blog.url}
+                    .account
+                        ul.dropdown
+                            a
+                                i.fa.fa-lg.fa-cog
+                            li
+                                a(href="/account") #{__('Account')}
+                                a(href="/settings") #{__('Settings')}
+                                a(href="/signout") #{__('Signout')}
         block content
     script(src="/js/vender.min.js")
     script(src="/js/core.min.js")

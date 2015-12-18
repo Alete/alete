@@ -103,6 +103,38 @@ module.exports = (function() {
         });
     });
 
+    app.get('/blog/:url', ensureMainSite, ensureAuthenticated, function(req, res, next){
+        var skip = (req.query.page > 0 ? (req.query.page-1) * 20 : 0);
+        Blog.findOne({
+            url: req.params.url
+        }).exec(function(err, blog){
+            if(err) { next(err); }
+            if(blog) {
+                Activity.find({
+                    blog: blog._id,
+                    $or: [
+                        {
+                            type: 'post'
+                        },
+                        {
+                            type: 'reflow'
+                        }
+                    ]
+                }).sort({
+                    _id: 'desc'
+                }).skip(skip).limit(20).populate('content.post').exec(function(err, activityFeed){
+                    // This is the activity of the blog requested
+                    // @TODO this should be replaced with a custom page instead of using index's template
+                    res.render('index', {
+                        activityFeed: activityFeed
+                    });
+                });
+            } else {
+                next('Blog doesn\'t exist');
+            }
+        });
+    });
+
     app.get('/user', ensureMainSite, ensureAuthenticated, function(req, res){
         res.send({
             user: req.user
