@@ -5,8 +5,13 @@ var mongoose = require('mongoose'),
 var userSchema = new mongoose.Schema({
     email: String,
     password: String,
-    url: String,
-    customDomain: String,
+    blogs: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Blog',
+            required: true
+        }
+    ],
     isAdmin: {
         type: Boolean,
         default: false
