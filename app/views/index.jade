@@ -1,11 +1,7 @@
 extends ./layouts/main
 
 block content
-    .container.activityForm
-        form(action="/activity/post", method="post", enctype="multipart/form-data")
-            input(type="text", name="text", id="text")
-            input(type="file", name="file", id="file")
-            input(type="submit", value=__('Upload Image')).button
+    include ./partials/newPostForm.jade
     .container.activityFeed
         for activity in activityFeed
             if(activity.type === 'post')
