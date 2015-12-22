@@ -63,7 +63,9 @@ module.exports = (function() {
         // check if we're toobusy() - note, this call is extremely fast, and returns
         // state that is cached at a fixed interval
         if (toobusy()){
-            res.status(503).send("I'm busy right now, sorry.");
+            res.status(503).render('http/500', {
+                error: 'I\'m busy right now, sorry.'
+            });
         } else {
             next();
         }
