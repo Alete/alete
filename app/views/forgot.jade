@@ -1,0 +1,11 @@
+extends ./layouts/main
+
+block content
+    .container.authForm
+        include ./partials/flash
+        form(action="/forgot", method="post").styled
+            div
+                label Email:
+                input(type="text", name="email")
+            div
+                input(type="submit", value="Submit").button

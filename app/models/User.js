@@ -12,6 +12,8 @@ var userSchema = new mongoose.Schema({
             required: true
         }
     ],
+    resetPasswordToken: String,
+    resetPasswordExpires: String,
     isAdmin: {
         type: Boolean,
         default: false

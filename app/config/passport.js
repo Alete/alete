@@ -1,5 +1,6 @@
 var LocalStrategy = require('passport-local').Strategy,
     User = require('../models/User'),
+    Blog = require('../models/Blog'),
     AccessToken = require('../models/AccessToken');
 
 exports = module.exports = function(app, passport) {
@@ -61,16 +62,37 @@ exports = module.exports = function(app, passport) {
                             }, function(err, user) {
                                 if (err) { return done(err); }
                                 if (user) {
-                                    return done(null, false, { message: 'That email is already in use or the URL is taken.' });
-                                } else {
-                                    user = new User({
-                                        email: email,
-                                        password: password,
-                                        url: req.body.url
+                                    return done(null, false, {
+                                        message: 'That email is already in use.'
                                     });
-                                    user.save(function(err, user) {
-                                        if (err) { throw err; }
-                                        return done(null, user);
+                                } else {
+                                    Blog.findOne({
+                                        url: req.body.url
+                                    }).exec(function(err, blog){
+                                        if(blog){
+                                            return done(null, false, {
+                                                message: 'That URL is taken.'
+                                            });
+                                        } else {
+                                            blog = new Blog({
+                                                url: req.body.url
+                                            });
+                                            blog.save(function(err, blogSaved) {
+                                                if (err) { throw err; }
+                                                if(blogSaved){
+                                                    user = new User({
+                                                        email: email,
+                                                        password: password,
+                                                        blogs: [
+                                                            blogSaved._id
+                                                        ]
+                                                    });
+                                                    user.save(function(err, userSaved) {
+                                                        return done(null, userSaved);
+                                                    });
+                                                }
+                                            });
+                                        }
                                     });
                                 }
                             });

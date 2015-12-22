@@ -8,6 +8,7 @@ var express = require('express'),
     i18n = require('i18n'),
     favicon = require('serve-favicon'),
     mongoose = require('mongoose'),
+    flash = require('express-flash'),
     passport = require('passport'),
     nconf = require('nconf'),
     cluster = require('cluster'),
@@ -56,6 +57,7 @@ app.use(session({
     saveUninitialized: true,
     resave: false
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 

@@ -1,0 +1,14 @@
+extends ./layouts/main
+
+block content
+    .container.authForm
+        include ./partials/flash
+        form(method="post")
+            div
+                label New Password:
+                input(type="password", name="password")
+            div
+                label Confirm:
+                input(type="password", name="confirm")
+            div
+                input(type="submit", value="Update Password").button

@@ -2,7 +2,8 @@ extends ./layouts/main
 
 block content
     .container.authForm
-        form(action="/signin", method="post").styled
+        include ./partials/flash
+        form(action="/signin", method="post")
             div
                 label Email:
                 input(type="text", name="email")
