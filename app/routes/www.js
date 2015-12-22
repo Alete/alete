@@ -74,7 +74,7 @@ module.exports = (function() {
     app.get('/', ensureMainSite, ensureAuthenticated, function(req, res){
         var skip = (req.query.page > 0 ? (req.query.page-1) * 20 : 0);
         Follow.find({
-            follower: req.user._id
+            follower: req.user.blogs[0]._id
         }).exec(function(err, following){
             // This will give us the people the signed in user follows
             // We need to get it to an array to use with $in
