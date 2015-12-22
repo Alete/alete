@@ -256,29 +256,21 @@ module.exports = (function() {
         });
     });
 
-    app.post('/activity/post', ensureMainSite, ensureAuthenticated, limitActivity, upload.single('file'), function(req, res, next){
-        imgur.setClientId('f7b02cbb57f42b5');
-        imgur.uploadFile(req.file.path).then(function(json){
-            res.send(json.data);
-            var activity = new Activity({
-                owner: req.user.blogs[0].id, // @TODO This should be the current blog you're using
-                type: 'post',
-                content: {
-                    image: {
-                        link: json.data.link,
-                        deleteHash: json.data.deletehash
-                    },
-                    body: req.body.text,
-                    notes: 1
-                }
+    // upload.single('file'),
+    // ^ that needs to be added for image uploading, for now we only support text!
+    app.post('/activity/post', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res){
+        var activity = new Activity({
+            owner: req.user.blogs[0].id, // @TODO This should be the current blog you're using
+            type: 'post',
+            content: {
+                body: req.body.text,
+                notes: 1
+            }
+        });
+        activity.save(function(err, post){
+            res.send({
+                post: post
             });
-            activity.save(function(err, post){
-                res.send({
-                    post: post
-                });
-            });
-        }).catch(function(err){
-            next(err);
         });
     });
 
