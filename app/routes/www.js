@@ -78,10 +78,14 @@ module.exports = (function() {
         }).exec(function(err, following){
             // This will give us the people the signed in user follows
             // We need to get it to an array to use with $in
-            // We add the current user otherwise they're missing their own posts
-            var activityNeeded = [req.user._id];
-            for(var i = 0; i < following.length; i++){
-                activityNeeded.push(following[i].followee);
+            // We add the current user's blogs otherwise they're missing their own posts
+            var activityNeeded = [];
+            var i = 0;
+            for(i = 0; i < req.user.blogs.length; i++){
+                activityNeeded.push(req.user.blogs[i].followee);
+            }
+            for(i = 0; i < following.length; i++){
+                activityNeeded.push(following[i]._id);
             }
             Activity.find({
                 owner: {
