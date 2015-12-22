@@ -18,6 +18,7 @@
     "jquery-bridget": "~1.1.0",
     "font-awesome": "~4.5.0",
     "imagesloaded": "~3.2.0",
-    "flipclock": "FlipClock#~0.7.7"
+    "flipclock": "FlipClock#~0.7.7",
+    "Chart.js": "~1.0.2"
   }
 }

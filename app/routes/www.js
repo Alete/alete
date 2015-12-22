@@ -1,4 +1,5 @@
 var express = require('express'),
+    mongoose = require('mongoose'),
     imgur = require('imgur'),
     multer  = require('multer'),
     toobusy = require('toobusy-js'),
@@ -127,6 +128,56 @@ module.exports = (function() {
                     // @TODO this should be replaced with a custom page instead of using index's template
                     res.render('index', {
                         activityFeed: activityFeed
+                    });
+                });
+            } else {
+                next('Blog doesn\'t exist');
+            }
+        });
+    });
+
+    app.get('/blog/:url/activity', ensureMainSite, ensureAuthenticated, function(req, res, next){
+        var skip = (req.query.page > 0 ? (req.query.page-1) * 20 : 0);
+        Blog.findOne({
+            url: req.params.url
+        }).exec(function(err, blog){
+            if(err) { next(err); }
+            if(blog) {
+                Activity.aggregate([
+                    {
+                        $match: {
+                            blog: mongoose.Types.ObjectId(blog._id)
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: {
+                                year: {
+                                    $year: "$date"
+                                },
+                                month:{
+                                    $month: "$date"
+                                },
+                                day: {
+                                    $dayOfMonth: "$date"
+                                }
+                            },
+                            notes: {
+                                $sum: 1
+                            }
+                        }
+                    },
+                    {
+                        $sort: {
+                            _id: 1
+                        }
+                    }
+                ]).skip(skip).limit(20).exec(function(err, notes){
+                    if(err) { next(err); }
+                    // This is the activity of the blog requested
+                    // @TODO this should be replaced with a custom page instead of using index's template
+                    res.render('activity', {
+                        notes: notes
                     });
                 });
             } else {
