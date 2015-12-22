@@ -370,5 +370,9 @@ module.exports = (function() {
         });
     });
 
+    app.get(['/privacy', '/tos', '/legal'], function(req, res){
+        res.render('legal');
+    });
+
     return app;
 })();
