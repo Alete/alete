@@ -246,13 +246,22 @@ module.exports = (function() {
         });
     });
 
-    app.get('/follow/:_id', ensureMainSite, ensureAuthenticated, function(req, res){
-        var follow = new Follow({
-            followee: req.params._id,
-            follower: req.user.blogs[0]._id
-        });
-        follow.save(function(err, follow){
-            res.send(follow);
+    app.get('/follow/:url', ensureMainSite, ensureAuthenticated, function(req, res, next){
+        Blog.findOne({
+            url: req.params.url
+        }).exec(function(err, blog){
+            if(err) { next(err); }
+            if(blog){
+                var follow = new Follow({
+                    followee: blog._id,
+                    follower: req.user.blogs[0]._id
+                });
+                follow.save(function(err, follow){
+                    res.send(follow);
+                });
+            } else {
+                res.send('That blog doesn\'t exist');
+            }
         });
     });
 
