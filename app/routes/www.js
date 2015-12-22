@@ -362,10 +362,10 @@ module.exports = (function() {
             if((((new Date()) - (new Date(user._id.getTimestamp()))) / 60000) > 10){
                 AccessToken.findOne({
                     used: false
-                }).select('_id').lean().limit(1).exec(function(err, accessToken){
+                }).select('id').lean().limit(1).exec(function(err, accessToken){
                     if(err) { next(err); }
                     res.send({
-                        accessToken: accessToken._id
+                        accessToken: accessToken.id
                     });
                 });
             } else {
