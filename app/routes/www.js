@@ -79,13 +79,13 @@ module.exports = (function() {
             // This will give us the people the signed in user follows
             // We need to get it to an array to use with $in
             // We add the current user's blogs otherwise they're missing their own posts
-            var activityNeeded = [];
-            var i = 0;
+            var activityNeeded = [],
+                i = 0;
             for(i = 0; i < req.user.blogs.length; i++){
-                activityNeeded.push(req.user.blogs[i].followee);
+                activityNeeded.push(req.user.blogs[i]._id);
             }
             for(i = 0; i < following.length; i++){
-                activityNeeded.push(following[i]._id);
+                activityNeeded.push(following[i].followee);
             }
             Activity.find({
                 blog: {
