@@ -34,7 +34,7 @@ module.exports = (function() {
         var midnight = (new Date()).setHours(0, 0, 0, 0),
             now = new Date();
         Activity.count({
-            owner: req.user._id,
+            blog: req.user._id,
             date: {
                 $gte: midnight,
                 $lt: now
@@ -88,7 +88,7 @@ module.exports = (function() {
                 activityNeeded.push(following[i]._id);
             }
             Activity.find({
-                owner: {
+                blog: {
                     $in: activityNeeded
                 },
                 $or: [
@@ -279,7 +279,7 @@ module.exports = (function() {
 
     app.post('/activity/reflow', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
         var activity = new Activity({
-            owner: req.user.blogs[0].id, // @TODO This should be the current blog you're using
+            blog: req.user.blogs[0].id, // @TODO This should be the current blog you're using
             type: 'reflow',
             content: {
                 post: req.body._id
@@ -310,7 +310,7 @@ module.exports = (function() {
             if(err) { next(err); }
             if(!heart){
                 var activity = new Activity({
-                    owner: req.user.blogs[0].id, // @TODO This should be the current blog you're using
+                    blog: req.user.blogs[0].id, // @TODO This should be the current blog you're using
                     type: 'heart',
                     content: {
                         post: req.body._id
