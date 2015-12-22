@@ -249,7 +249,7 @@ module.exports = (function() {
     app.get('/follow/:_id', ensureMainSite, ensureAuthenticated, function(req, res){
         var follow = new Follow({
             followee: req.params._id,
-            follower: req.user._id
+            follower: req.blog[0]._id
         });
         follow.save(function(err, follow){
             res.send(follow);
