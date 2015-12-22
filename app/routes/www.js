@@ -364,9 +364,14 @@ module.exports = (function() {
                     used: false
                 }).select('id').lean().limit(1).exec(function(err, accessToken){
                     if(err) { next(err); }
-                    res.send({
-                        accessToken: accessToken.id
-                    });
+                    if(accessToken){
+                        res.send({
+                            accessToken: accessToken.id
+                        });
+                    } else {
+                        // We ran out of accessTokens
+                        res.status(200).send('Sorry, we\'re currently out of accessTokens.');
+                    }
                 });
             } else {
                 // If the last user signed up less than 10 minutes ago
