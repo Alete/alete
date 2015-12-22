@@ -2,6 +2,17 @@ module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
 
     grunt.initConfig({
+        clean: {
+           dist: './dist/',
+           bower: './bower_components' // jshint ignore:line
+       },
+       bower: {
+            install: {
+                options: {
+                    copy: false
+                }
+            }
+        },
         bower_concat: { // jshint ignore:line
             vender: {
                 dest: './dist/vender.js',
@@ -116,6 +127,8 @@ module.exports = function(grunt) {
         }
     });
 
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-bower-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
@@ -123,10 +136,21 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('default', [
+        'clean:dist',
         'bower_concat',
         'uglify',
         'sass',
-        'cssmin'
+        'cssmin',
+        'copy'
     ]);
 
+    grunt.registerTask('refresh', [
+        'clean',
+        'bower',
+        'bower_concat',
+        'uglify',
+        'sass',
+        'cssmin',
+        'copy'
+    ]);
 };
