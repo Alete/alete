@@ -190,7 +190,11 @@ module.exports = (function() {
 
     app.get('/user', ensureMainSite, ensureAuthenticated, function(req, res){
         res.send({
-            user: req.user
+            user: {
+                _id: req.user._id,
+                email: req.user.email,
+                blogs: req.user.blogs
+            }
         });
     });
 
