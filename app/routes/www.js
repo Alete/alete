@@ -258,9 +258,9 @@ module.exports = (function() {
 
     // upload.single('file'),
     // ^ that needs to be added for image uploading, for now we only support text!
-    app.post('/activity/post', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res){
+    app.post('/activity/post', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
         var activity = new Activity({
-            owner: req.user.blogs[0].id, // @TODO This should be the current blog you're using
+            blog: req.user.blogs[0].id, // @TODO This should be the current blog you're using
             type: 'post',
             content: {
                 body: req.body.text,
@@ -268,13 +268,16 @@ module.exports = (function() {
             }
         });
         activity.save(function(err, post){
-            res.send({
-                post: post
-            });
+            if(err) { next(err); }
+            if(post){
+                res.redirect('/');
+            } else {
+                next('Post couldn\'t be saved at this time.');
+            }
         });
     });
 
-    app.post('/activity/reflow/', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
+    app.post('/activity/reflow', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
         var activity = new Activity({
             owner: req.user.blogs[0].id, // @TODO This should be the current blog you're using
             type: 'reflow',
@@ -299,7 +302,7 @@ module.exports = (function() {
         });
     });
 
-    app.post('/activity/heart/', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
+    app.post('/activity/heart', ensureMainSite, ensureAuthenticated, limitActivity, function(req, res, next){
         Activity.findOne({
             'content.post': req.body._id,
             type: 'heart'
