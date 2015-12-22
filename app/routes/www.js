@@ -362,11 +362,11 @@ module.exports = (function() {
             if((((new Date()) - (new Date(user._id.getTimestamp()))) / 60000) > 10){
                 AccessToken.findOne({
                     used: false
-                }).select('id').lean().limit(1).exec(function(err, accessToken){
+                }).select('_id').lean().limit(1).exec(function(err, accessToken){
                     if(err) { next(err); }
                     if(accessToken){
                         res.send({
-                            accessToken: accessToken.id
+                            accessToken: accessToken._id
                         });
                     } else {
                         // We ran out of accessTokens
