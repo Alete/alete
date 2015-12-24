@@ -1,7 +1,8 @@
 var express = require('express'),
     jade = require('jade'),
     async = require('async'),
-    Theme = require('../models/Theme');
+    Theme = require('../models/Theme'),
+    Activity = require('../models/Activity');
 
 module.exports = (function() {
     var app = express.Router();
@@ -81,9 +82,28 @@ module.exports = (function() {
                 theme.locals.customDomain = res.locals.blog.customDomain;
                 theme.locals.followers = res.locals.blog.followers;
 
-                var fn = jade.compile(theme.jade, {});
-                var html = fn(theme.locals);
-                res.send(html);
+                // Get all of the posts for the blog being rendered
+                var skip = (req.query.page > 0 ? (req.query.page-1) * 20 : 0);
+                Activity.find({
+                    blog: res.locals.blog._id,
+                    $or: [
+                        {
+                            type: 'post'
+                        },
+                        {
+                            type: 'reflow'
+                        }
+                    ]
+                }).sort({
+                    _id: 'desc'
+                }).skip(skip).limit(20).populate('content.post').exec(function(err, posts){
+                    if(err) { next(err); }
+                    theme.locals.posts = posts;
+
+                    var fn = jade.compile(theme.jade, {});
+                    var html = fn(theme.locals);
+                    res.send(html);
+                });
             } else {
                 // If we still don't have a theme var then we're
                 // missing the default theme and should just tell them
