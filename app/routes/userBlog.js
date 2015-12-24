@@ -36,10 +36,38 @@ module.exports = (function() {
                 // If we can't find the theme then we use the default one
                 if(!theme){
                     Theme.findOne({
-                        url: '============='
+                        blog: '567b75270364139913b6547e'
                     }).lean().sort('data').exec(function(err, theme){
                         if(err) { next(err); }
                         callback(null, theme);
+                    });
+                } else {
+                    callback(null, theme);
+                }
+            }, function(theme, callback) {
+                // If we can't find the default theme then we should
+                // try to load it from the disk and add it to the db
+                if(theme === null){
+                    theme = new Theme({
+                        blog: '567b75270364139913b6547e', // @TODO replace this, we're using a fake blog id for now
+                        jade: 'pre #{locals}',
+                        locals: {
+                            sidebar: [
+                                {
+                                    url: 'https://google.com',
+                                    title: 'Google!'
+                                }
+                            ],
+                            pageTitle: 'This is a title!'
+                        }
+                    });
+                    theme.save(function(err, themeSaved){
+                        if(err) {
+                            callback(err);
+                        }
+                        if(themeSaved){
+                            callback(null, themeSaved);
+                        }
                     });
                 } else {
                     callback(null, theme);
