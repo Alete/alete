@@ -1,7 +1,5 @@
 var express = require('express'),
     mongoose = require('mongoose'),
-    imgur = require('imgur'),
-    multer  = require('multer'),
     toobusy = require('toobusy-js'),
     Follow = require('../models/Follow'),
     User = require('../models/User'),
@@ -11,9 +9,6 @@ var express = require('express'),
 
 module.exports = (function() {
     var app = express.Router();
-    var upload = multer({
-        dest: '/tmp/alete/uploads/'
-    });
 
     function ensureAuthenticated(req, res, next) {
         if(req.isAuthenticated()) {

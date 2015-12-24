@@ -6,6 +6,10 @@ var blogSchema = new mongoose.Schema({
     followers: {
         type: Number,
         default: 0
+    },
+    suspended: {
+        type: Boolean,
+        default: 0
     }
 });
 
