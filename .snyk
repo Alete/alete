@@ -1,39 +1,51 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:uglify-js:20150824':
-    - 'transformers@2.1.0 > uglify-js@2.2.5':
+    - transformers@2.1.0 > uglify-js@2.2.5:
         reason: Waiting on upstream update
         expires: '2016-01-15T15:12:51.166Z'
-    - 'jade@1.11.0 > transformers@2.1.0 > uglify-js@2.2.5':
+    - jade@1.11.0 > transformers@2.1.0 > uglify-js@2.2.5:
         reason: ' Waiting on upstream update'
         expires: '2016-01-15T15:12:51.167Z'
-    - 'bower@1.6.9 > handlebars@2.0.0 > uglify-js@2.3.6':
+    - bower@1.6.9 > handlebars@2.0.0 > uglify-js@2.3.6:
         reason: ' Waiting on upstream update'
         expires: '2016-01-15T15:12:51.167Z'
   'npm:uglify-js:20151024':
-    - 'transformers@2.1.0 > uglify-js@2.2.5':
+    - transformers@2.1.0 > uglify-js@2.2.5:
         reason: ' Waiting on upstream update'
         expires: '2016-01-15T15:12:51.167Z'
-    - 'jade@1.11.0 > transformers@2.1.0 > uglify-js@2.2.5':
+    - jade@1.11.0 > transformers@2.1.0 > uglify-js@2.2.5:
         reason: ' Waiting on upstream update'
         expires: '2016-01-15T15:12:51.167Z'
-    - 'bower@1.6.9 > handlebars@2.0.0 > uglify-js@2.3.6':
+    - bower@1.6.9 > handlebars@2.0.0 > uglify-js@2.3.6:
         reason: ' Waiting on upstream update'
         expires: '2016-01-15T15:12:51.167Z'
   'npm:qs:20140806-1':
-    - 'tiny-lr-fork@0.0.5 > qs@0.5.6':
+    - tiny-lr-fork@0.0.5 > qs@0.5.6:
         reason: ' Waiting on upstream update'
         expires: '2016-01-15T15:12:51.167Z'
   'npm:qs:20140806':
-    - 'tiny-lr-fork@0.0.5 > qs@0.5.6':
+    - tiny-lr-fork@0.0.5 > qs@0.5.6:
         reason: ' Waiting on upstream update'
         expires: '2016-01-15T15:12:51.167Z'
   'npm:semver:20150403':
-    - 'bower@1.6.9 > semver@2.3.2':
+    - bower@1.6.9 > semver@2.3.2:
         reason: ' Waiting on upstream update'
         expires: '2016-01-15T15:12:51.167Z'
   'npm:handlebars:20151207':
-    - 'bower@1.6.9 > handlebars@2.0.0':
+    - bower@1.6.9 > handlebars@2.0.0:
         reason: ' Waiting on upstream update'
         expires: '2016-01-15T15:12:51.167Z'
-patch: {}
-version: v1
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:minimatch:20160620':
+    - imgur > glob > minimatch:
+        patched: '2017-06-28T08:45:06.527Z'
+  'npm:ms:20170412':
+    - compression > debug > ms:
+        patched: '2017-06-28T08:45:06.527Z'
+  'npm:uglify-js:20151024':
+    - jade > transformers > uglify-js:
+        patched: '2017-06-28T08:45:06.527Z'
+version: v1.7.1
