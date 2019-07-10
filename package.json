@@ -5,7 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "snyk test && grunt test",
-    "start": "nodemon --watch app --watch app.js --harmony app.js"
+    "start": "nodemon --watch app --watch app.js --harmony app.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -41,7 +43,7 @@
     "passport": "^0.3.0",
     "passport-local": "^1.0.0",
     "serve-favicon": "^2.3.0",
-    "snyk": "^1.6.1",
+    "snyk": "^1.192.4",
     "toobusy-js": "^0.4.2",
     "underscore": "^1.8.0"
   },
@@ -57,5 +59,6 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-sass": "^1.1.0",
     "load-grunt-tasks": "^3.3.0"
-  }
+  },
+  "snyk": true
 }
