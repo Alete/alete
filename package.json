@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/Alete/alete#readme",
   "dependencies": {
-    "bcrypt": "^0.8.1",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.12.0",
     "compression": "^1.5.2",
     "connect-mongo": "^0.8.2",
